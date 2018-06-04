@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}関心事の一覧{% endblock title %}
+
+{% block container %}
+
+    <div>
+        <a href="{% url 'graph:concern-new' %}">新規登録</a>
+    </div>
+
+    <div>
+        <ul>
+            {% for concern in concern_list %}
+                <li>
+                    <a href="{% url 'graph:concern-detail' concern.id %}">{{ concern.content }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock container %}
