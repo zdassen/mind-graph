@@ -38,4 +38,34 @@ urlpatterns = [
         name="concern-edit"
     ),
 
+    # # # # # Node モデル # # # # #
+
+    # ノードの新規作成 ( 接続元にも接続先にもならないノード )
+    # ex: /graph/concerns/42/nodes/new/
+    path("concerns/<int:concern_id>/nodes/new/",
+        views.NodeCreateView.as_view(),
+        name="node-new"
+    ),
+
+    # 接続元ノードの作成
+    # ex: /graph/concerns/42/nodes/42/new_source/
+    path("concerns/<int:concern_id>/nodes/<int:target_id>/new_source/",
+        views.SourceNodeCreateView.as_view(),
+        name="node-new-source"
+    ),
+
+    # 接続先ノードの作成
+    # ex: /graph/concerns/42/nodes/42/new_target/
+    path("concerns/<int:concern_id>/nodes/<int:source_id>/new_target/",
+        views.TargetNodeCreateView.as_view(),
+        name="node-new-target"
+    ),
+
+    # ノードの編集
+    # ex: /graph/nodes/edit/42/
+    path("nodes/<int:pk>/",
+        views.NodeEditView.as_view(),
+        name="node-edit"
+    ),
+
 ]

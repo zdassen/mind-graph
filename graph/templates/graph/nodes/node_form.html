@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}ノードの{{ button_value }}{% endblock title %}
+
+{% block container %}
+
+    <div>
+        <form action="" method="POST">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <button type="submit">{{ button_value }}</button>
+        </form>
+    </div>
+
+{% endblock container %}

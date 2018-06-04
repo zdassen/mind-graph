@@ -9,15 +9,35 @@
     </div>
 
     <div>
-        <ul>
-            <!-- ※非効率なクエリが発行されることに注意 -->
-            {% for node in concern.node_set.all %}
-                <li>{{ node.content }}</li>
-            {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>ノード</th>
+                    <th>このノードに接続する</th>
+                    <th>このノードから接続する</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ※非効率なクエリが発行されることに注意 -->
+                {% for node in concern.node_set.all %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'graph:node-edit' node.id %}">{{ node.content }}</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'graph:node-new-source' concern.id node.id %}">このノードに接続する</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'graph:node-new-target' concern.id node.id %}">このノードから接続する</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <div>
+        <a href="{% url 'graph:node-new' concern.id %}">ノードの追加</a>
         <a href="{% url 'graph:concern-edit' concern.id %}">編集</a>
     </div>
 
