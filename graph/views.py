@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from .models import Concern, Node
 
@@ -134,26 +135,8 @@ class SourceNodeCreateView(NodeFormView, generic.CreateView):
 
     # 入力対象のフィールド
     fields = (
-        "targets",
         "content",
     )
-
-    def get_form(self):
-        """フォームを取得する"""
-        form = super().get_form()
-
-        # 選択肢を Concern に関するものだけにする
-        form.fields["targets"].queryset = \
-            self.model.objects.filter(
-                user=self.request.user,
-                concern__id=self.kwargs["concern_id"]
-            )
-
-        # 接続先ノードを選デフォルトで選択する
-        form.fields["targets"].initial = \
-            (self.kwargs["target_id"],)
-
-        return form
 
     def get_context_data(self, **kwargs):
         """埋め込み変数を設定する"""
@@ -172,7 +155,15 @@ class SourceNodeCreateView(NodeFormView, generic.CreateView):
         form.instance.concern = get_object_or_404(
             Concern, pk=self.kwargs["concern_id"])
 
-        return super().form_valid(form)
+        self.object = form.save()
+
+        # 接続先のノードを設定する
+        target = self.model.objects.get(
+            pk=self.kwargs["target_id"])
+        self.object.targets.add(target)
+
+        # return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class TargetNodeCreateView(NodeFormView, generic.CreateView):
@@ -196,17 +187,31 @@ class TargetNodeCreateView(NodeFormView, generic.CreateView):
         """フォームの値が正常な場合の処理"""
         form.instance.user = self.request.user
 
-        # 接続元のノードを設定する
-        form.instance.targets_set = self.model.objects.filter(
-            user=self.request.user,
-            pk=self.kwargs["source_id"]
-        )
-
         # 対象の Concern を設定する
         form.instance.concern = get_object_or_404(
-            Concern, pk=self.kwargs["concern_id"])
+            Concern, pk=self.kwargs["concern_id"]
+        )
 
-        return super().form_valid(form)
+        # ノードを保存する
+        # ( このタイミングで id が付与されるので、
+        # 以降で sources.add(source) ができるようになる 
+        # なぜなら、sources.add(source) とは実際には
+        # source & target 列からなる中間テーブルへの
+        # レコードの挿入に過ぎないからである )
+        self.object = form.save()
+
+        # 接続元のノードを追加する
+        source = self.model.objects.get(
+            pk=self.kwargs["source_id"]
+        )
+        self.object.sources.add(source)
+
+        # ModelFormMixin の form_valid() で再度、
+        #     self.object = form.save()
+        # を実行してしまうので、リダイレクトだけにする
+        # 
+        # return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class NodeEditView(NodeFormView, generic.UpdateView):
@@ -221,13 +226,22 @@ class NodeEditView(NodeFormView, generic.UpdateView):
 
     def get_form(self):
         form = super().get_form()
+        
+        # 選択肢を関連するものだけに絞り込む
+        # ただし、自身以外のノードであること
+        form.fields["targets"].queryset = \
+            self.model.objects.select_related().filter(
+                user=self.request.user,
+                # concern=self.object.concern    # ※クエリが一つ減る
+                concern__id=self.kwargs["concern_id"]
+            ).exclude(
+                pk=self.kwargs["pk"]
+            )
 
         # 接続先を選択しておく
-        form.fields["targets"].initial = \
-            (self.object.targets.values)
-        #
-        # ※ここが途中
-        #
+        form.fields["targets"].initial = tuple(
+            self.object.targets.values_list("id", flat=True)
+        )
 
         return form
 

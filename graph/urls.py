@@ -62,8 +62,8 @@ urlpatterns = [
     ),
 
     # ノードの編集
-    # ex: /graph/nodes/edit/42/
-    path("nodes/<int:pk>/",
+    # ex: /graph/concerns/42/nodes/edit/42/
+    path("concerns/<int:concern_id>/nodes/edit/<int:pk>/",
         views.NodeEditView.as_view(),
         name="node-edit"
     ),

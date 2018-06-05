@@ -22,7 +22,7 @@
                 {% for node in concern.node_set.all %}
                     <tr>
                         <td>
-                            <a href="{% url 'graph:node-edit' node.id %}">{{ node.content }}</a>
+                            <a href="{% url 'graph:node-edit' concern.id node.id %}">{{ node.content }}</a>
                         </td>
                         <td>
                             <a href="{% url 'graph:node-new-source' concern.id node.id %}">このノードに接続する</a>
