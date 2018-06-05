@@ -5,10 +5,20 @@
 
         <title>{% block title %}{% endblock title %}</title>
 
+        {% load static %}
+
+        <!-- CSS -->
+        {% block css %}{% endblock css %}
+
+        <!-- JavaScript libraries -->
+        {% block javascript %}{% endblock javascript %}
+
     </head>
     <body>
         
         {% block container %}{% endblock container %}
 
+        {% block javascript_bottom %}
+        {% endblock javascript_bottom %}
     </body>
 </html>

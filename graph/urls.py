@@ -24,6 +24,13 @@ urlpatterns = [
         name="concern-detail"
     ),
 
+    # 関心事の詳細 ( ノードの接続情報、JSON データ )
+    # ex: /graph/concerns/42.json/
+    path("concerns/<int:pk>.json/",
+        views.concern_detail_json,
+        name="concern-detail-json"
+    ),
+
     # 関心事の新規作成
     # ex: /graph/concerns/new/
     path("concerns/new/",
@@ -47,6 +54,20 @@ urlpatterns = [
         name="node-new"
     ),
 
+    # ノードの新規作成 ( ルートに直接接続するノード )
+    # ex: /graph/concerns/42/nodes/new_to_root/
+    path("concerns/<int:concern_id>/nodes/new_to_root/",
+        views.NodeToRootCreateView.as_view(),
+        name="node-new-to-root"
+    ),
+
+    # ノードの編集
+    # ex: /graph/concerns/42/nodes/edit/42/
+    path("concerns/<int:concern_id>/nodes/edit/<int:pk>/",
+        views.NodeEditView.as_view(),
+        name="node-edit"
+    ),
+
     # 接続元ノードの作成
     # ex: /graph/concerns/42/nodes/42/new_source/
     path("concerns/<int:concern_id>/nodes/<int:target_id>/new_source/",
@@ -59,13 +80,6 @@ urlpatterns = [
     path("concerns/<int:concern_id>/nodes/<int:source_id>/new_target/",
         views.TargetNodeCreateView.as_view(),
         name="node-new-target"
-    ),
-
-    # ノードの編集
-    # ex: /graph/concerns/42/nodes/edit/42/
-    path("concerns/<int:concern_id>/nodes/edit/<int:pk>/",
-        views.NodeEditView.as_view(),
-        name="node-edit"
     ),
 
 ]

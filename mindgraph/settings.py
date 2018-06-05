@@ -122,6 +122,11 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "graph/static"),
+)
+
 # Development settings
 LOGGING = {
     "version": 1,
@@ -141,7 +146,8 @@ LOGGING = {
 }
 
 # django-debug-toolbar
-if DEBUG:
+DEBUG_DDB = False
+if DEBUG_DDB:
     INTERNAL_IPS = ['127.0.0.1']
     INSTALLED_APPS += ['debug_toolbar']
     MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']

@@ -75,5 +75,10 @@ class Node(BaseModel):
         max_length=40
     )
 
+    # ルートに直接接続するかどうか
+    to_root = models.BooleanField(
+        default=False
+    )
+
     def __str__(self):
         return "%s" % self.content

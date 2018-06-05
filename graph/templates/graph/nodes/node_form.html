@@ -5,7 +5,17 @@
 {% block container %}
 
     <div>
-        <form action="" method="POST">
+        {% if url_name == "node-new" %}
+            <form action="{% url 'graph:node-new' concern_id %}" method="POST">
+        {% elif url_name == "node-new-to-root" %}
+            <form action="{% url 'graph:node-new-to-root' concern_id %}" method="POST">
+        {% elif url_name == "node-edit" %}
+            <form action="{% url 'graph:node-edit' concern_id node_id %}" method="POST">
+        {% elif url_name == "node-new-source" %}
+            <form action="{% url 'graph:node-new-source' concern_id node_id %}" method="POST">
+        {% elif url_name == "node-new-target" %}
+            <form action="{% url 'graph:node-new-target' concern_id node_id %}" method="POST">
+        {% endif %}
             {{ form.as_p }}
             {% csrf_token %}
             <button type="submit">{{ button_value }}</button>

@@ -2,10 +2,27 @@
 
 {% block title %}関心事の詳細{% endblock title %}
 
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/concerns/bootstrap.css.map' %}">
+    <link rel="stylesheet" href="{% static 'css/concerns/bootstrap.min.css' %}">
+{% endblock css %}
+
+{% block javascript %}
+    {% load static %}
+    <script src="{% static 'js/concerns/jquery-3.3.1.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/concerns/popper.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/concerns/bootstrap.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/concerns/d3.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/concerns/force.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/concerns/force-concern.js' %}" type="text/javascript"></script>
+{% endblock javascript %}
+
 {% block container %}
 
     <div>
-        <svg id="svgArea" style="width:300px;height:200px;border:1px solid lightgray;"></svg>
+        <svg id="svgArea" style="width:690px;height:300px;border:1px solid lightgray;"></svg>
+        <input type="hidden" id="id_concern" value="{{ concern.id }}" />
     </div>
 
     <div>
@@ -41,4 +58,23 @@
         <a href="{% url 'graph:concern-edit' concern.id %}">編集</a>
     </div>
 
+    <div class="modal fade" id="mdddl" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                
+                <div class="modal-body"></div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 {% endblock container %}
+
+{% block javascript_bottom %}
+    {% load static %}
+    <script src="{% static 'js/concerns/concern_detail.js' %}" type="text/javascript"></script>
+{% endblock javascript_bottom %}
