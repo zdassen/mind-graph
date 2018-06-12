@@ -36,6 +36,67 @@ class ConcernDetailView(generic.DetailView):
     template_name = "graph/concerns/concern_detail.html"
 
 
+# ※任意のフィールドにアクセスできてしまうのでダメ@180607
+def get_nodes_and_links(queryset, targets_manager_name,
+    *other_fields):
+    """
+    多対多の関係のレコードから
+        ・ノード ( id、その他の内容 ) のリスト
+        ・ノード間の接続情報
+    を取り出す
+    """
+
+    # ID の変換用テーブルを作成する & ノード情報をまとめる
+    # データベース上のレコードの ID <=> D3.js で使用する ID
+    id2js = {}
+    node_dicts = []
+    for i, record in enumerate(queryset):
+
+        # テーブルに ID を登録
+        id2js[record.id] = i
+
+        # レコードの ID を設定 ( D3.js 側で使用する ID )
+        node_dict = {
+            "id": i,
+        }
+
+        # ノード情報を追加 ( ID 以外のフィールド情報 )
+        for field in other_fields:
+            node_dict[field] = getattr(record, field)
+
+        node_dicts.append(node_dict)
+
+    # 接続情報を作成する
+    # 接続情報は id2js ( 変換テーブル ) で変換した後の ID を
+    # 用いるため、再度ループ走査しなおす必要がある
+    links = []
+    for record in queryset:
+
+        # RelatedManager を取得する
+        targets_manager = getattr(record, targets_manager_name)
+        # ※クラスの確認 ( RelatedManager であることを確認 )
+
+        for target in targets_manager.all():
+
+            # 接続情報を追加
+            links.append({
+
+                # 接続元の ID
+                "source": id2js[record.id],
+
+                # 接続先の ID
+                "target": id2js[target.id],
+
+            })
+
+    payload = {
+        "nodes": node_dicts,
+        "links": links,
+    }
+
+    return payload
+
+
 def concern_detail_json(request, pk):
     """ノード一覧とノードの接続情報 (JSONデータ)"""
 
@@ -55,6 +116,7 @@ def concern_detail_json(request, pk):
         "id": 0,
         "content": concern.content,
         "is_root": True,
+        "node_type": 0,
     }]
 
     # ノード情報を作成 ( ノード全体 )
@@ -64,22 +126,24 @@ def concern_detail_json(request, pk):
             "content": node.content,
             "is_root": False,
             "nid": node.id,
+            "node_type": node.node_type,
         } for node in nodes
     ]
 
     # 接続情報を作成する
-    # ※最も古いノードをルートに接続しているだけだが..
     links = []
     for node in nodes:
         if node.to_root:
             links.append({
                 "source": id2js[node.id],
                 "target": 0,    # ルートに接続
+                "node_type": 0,
             })
         for target in node.targets.all():
             links.append({
                 "source": id2js[node.id],
                 "target": id2js[target.id],
+                "node_type": node.node_type,
             })
 
     payload = {

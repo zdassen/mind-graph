@@ -5,9 +5,34 @@
  */
 class ForceConcern extends Force {
 
+  /* 矢印を定義する ( 定義を追加する ) */
+  appendArrowHead() {
+    super.appendArrowHead();
+    
+    // 矢印の先端部分の定義を追加する
+    // ( node_type = REVERSE の場合 )
+    let arrowIdReverse = "arrowHeadReverse";
+    this.arrowIdReverse = arrowIdReverse;
+    this.defineArrowHead(arrowIdReverse, "crimson");
+  }
+
+  /* リンク ( 矢印の色 ) を設定する */
+  setLineColor(link) {
+    if (link.node_type === 0) return this.arrowColor;
+    else return "crimson";
+  }
+
+  /* 矢印の先端部分を定義する ( id を指定する ) */
+  setArrowHead(link) {
+    if (link.node_type === 0) {
+      return `url(#${this.arrowId})`;
+    } else if (link.node_type === 1) {
+      return `url(#${this.arrowIdReverse})`;
+    }
+  }
+
   /* ラベルをセットする */
   setLabel(node) {
-    // return [node.nid, node.content].join(":");
     return node.content;
   }
 
@@ -40,6 +65,7 @@ class ForceConcern extends Force {
   /* ノードの色を設定する */
   setNodeColor(node) {
     if (node.is_root) return "orange";
+    else if (node.node_type === 1) return "crimson";
     else return "teal";
   }
 
@@ -57,7 +83,7 @@ class ForceConcern extends Force {
       .attr("title", (d) => {
 
         // Concern の URL
-        let baseUrl = `/graph/concerns/${concernId}/`;
+        let baseUrl = `/logs/concerns/${concernId}/`;
 
         // ノードの編集用の URL
         let nodeEditUrl = `${baseUrl}nodes/edit/${d.nid}/`;
@@ -80,11 +106,15 @@ class ForceConcern extends Force {
           </li>
         `;
 
-        // 「このノードに接続する」 & 「接続先のノードを追加」
-        let sourceAndNew = `
+        // 「このノードに接続する」
+        let sourceNew = `
           <li class="list-group-item">
             <a href="#" to="${newSourceUrl}">このノードに接続する</a>
           </li>
+        `;
+
+        // 「接続先のノードを追加」
+        let targetNew = `
           <li class="list-group-item">
             <a href="#" to="${newTargetUrl}">接続先のノードを追加</a>
           </li>
@@ -94,7 +124,7 @@ class ForceConcern extends Force {
         if (d.is_root) {
           return `
             <ul class="list-group">
-              ${sourceAndNew}
+              ${sourceNew}
             </ul>
           `;
         } else {
@@ -103,7 +133,8 @@ class ForceConcern extends Force {
           return `
             <ul class="list-group">
               ${nodeEdit}
-              ${sourceAndNew}
+              ${sourceNew}
+              ${targetNew}
             </ul>
           `;
         }

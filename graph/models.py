@@ -80,5 +80,17 @@ class Node(BaseModel):
         default=False
     )
 
+    # ノードタイプ
+    NORMAL = 0
+    REVERSE = 1
+    NODE_TYPES = (
+        (NORMAL, "ノーマル"),
+        (REVERSE, "反論"),
+    )
+    node_type = models.IntegerField(
+        choices=NODE_TYPES,
+        default=NORMAL
+    )
+
     def __str__(self):
         return "%s" % self.content

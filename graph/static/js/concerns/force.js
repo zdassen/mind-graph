@@ -27,7 +27,8 @@ class Force {
     // 矢印を定義する
     this.defs = this.svg.append("defs");
     this.arrowId = "arrowHead";
-    this.defineArrowHead(this.arrowId, this.arrowColor);
+    // this.defineArrowHead(this.arrowId, this.arrowColor);
+    this.appendArrowHead();
 
     // リンク (g要素 + line要素) を追加する
     this.linkGroup = this.appendLinkGroup();
@@ -94,6 +95,21 @@ class Force {
     setTimeout(() => { this.sim.stop(); }, ms);
   }
 
+  /* 矢印を定義する ( 定義を追加する ) */
+  appendArrowHead() {
+    this.defineArrowHead(this.arrowId, this.arrowColor);
+  }
+
+  /* 矢印 ( line 要素 ) の色を設定する */
+  setLineColor(link) {
+    return this.arrowColor;
+  }
+
+  /* 矢印の先端部分を定義する ( id を指定する ) */
+  setArrowHead(link) {
+    return `url(#${this.arrowId})`;
+  }
+
   /* リンク ( g 要素 + line 要素 ) を追加する */
   appendLinkGroup() {
 
@@ -103,10 +119,14 @@ class Force {
       .data(this.links)
       .enter()
       .append("line")
-      .attr("stroke", (link) => this.arrowColor)
+      .attr("stroke", (link) => {
+        return this.setLineColor(link);
+      })
       .attr("stroke-width", 1)
       .attr("fill", "none")
-      .attr("marker-end", `url(#${this.arrowId})`);
+      .attr("marker-end", (link) => {
+        return this.setArrowHead(link);
+      });
 
     return linkGroup;
   }
