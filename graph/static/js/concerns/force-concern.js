@@ -83,7 +83,7 @@ class ForceConcern extends Force {
       .attr("title", (d) => {
 
         // Concern の URL
-        let baseUrl = `/logs/concerns/${concernId}/`;
+        let baseUrl = `/graph/concerns/${concernId}/`;
 
         // ノードの編集用の URL
         let nodeEditUrl = `${baseUrl}nodes/edit/${d.nid}/`;

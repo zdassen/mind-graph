@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect, JsonResponse
 
 from .models import Concern, Node
+from .forms import ConcernForm, NodeEditForm,\
+NodeToRootForm, SourceNodeForm, TargetNodeForm
 
 
 # Create your views here.
@@ -157,14 +159,8 @@ def concern_detail_json(request, pk):
 class ConcernFormView(object):
     """関心事の新規作成/編集"""
 
-    # 対象のモデル
-    model = Concern
-
-    # 入力/編集対象のフィールド
-    fields = (
-        "content",
-        "concern_type",
-    )
+    # 使用するフォームクラス
+    form_class = ConcernForm
 
     # 使用するテンプレート
     template_name = "graph/concerns/concern_form.html"
@@ -272,10 +268,8 @@ class NodeCreateView(NodeFormView, generic.CreateView):
 class NodeToRootCreateView(NodeFormView, generic.CreateView):
     """ノードの新規作成 ( ルートに直接接続するもの )"""
 
-    # 入力対象のフィールド
-    fields = (
-        "content",
-    )
+    # 使用するフォームクラス
+    form_class = NodeToRootForm
 
     def get_context_data(self, **kwargs):
         """埋め込み変数を設定する"""
@@ -301,13 +295,8 @@ class NodeToRootCreateView(NodeFormView, generic.CreateView):
 class NodeEditView(NodeFormView, generic.UpdateView):
     """ノードの編集"""
 
-    # 編集対象のフィールド
-    fields = (
-        "concern",
-        "targets",
-        "content",
-        "to_root",
-    )
+    # 使用するフォームクラス
+    form_class = NodeEditForm
 
     def get_form(self):
         form = super().get_form()
@@ -354,10 +343,8 @@ class NodeEditView(NodeFormView, generic.UpdateView):
 class SourceNodeCreateView(NodeFormView, generic.CreateView):
     """接続元ノードの作成"""
 
-    # 入力対象のフィールド
-    fields = (
-        "content",
-    )
+    # 使用するフォームクラス
+    form_class = SourceNodeForm
 
     def get_context_data(self, **kwargs):
         """埋め込み変数を設定する"""
@@ -391,10 +378,8 @@ class SourceNodeCreateView(NodeFormView, generic.CreateView):
 class TargetNodeCreateView(NodeFormView, generic.CreateView):
     """接続先ノードの作成"""
 
-    # 入力対象のフィールド
-    fields = (
-        "content",
-    )
+    # 使用するフォームクラス
+    form_class = TargetNodeForm
 
     def get_context_data(self, **kwargs):
         """埋め込み変数を設定する"""
