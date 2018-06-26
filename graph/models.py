@@ -79,13 +79,17 @@ class Node(BaseModel):
     to_root = models.BooleanField(
         default=False
     )
-
+    
     # ノードタイプ
     NORMAL = 0
     REVERSE = 1
+    PLAN = 2
+    DONE = 3
     NODE_TYPES = (
         (NORMAL, "ノーマル"),
         (REVERSE, "反論"),
+        (PLAN, "実行予定"),
+        (DONE, "実行済み"),
     )
     node_type = models.IntegerField(
         choices=NODE_TYPES,

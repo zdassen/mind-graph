@@ -215,6 +215,34 @@ class NodeFormView(object):
         return reverse_lazy("graph:concern-detail",
             kwargs={"pk": concern.id,})
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+
+        if "node_type" in form.fields:
+
+            # Concern の種類に応じてノードタイプを絞り込む
+            ANALYZE = 0
+            SET_TARGET = 1
+            concern = get_object_or_404(Concern,
+                pk=self.kwargs["concern_id"])
+        
+            # form_valid() で使用する
+            self._concern = concern
+
+            concern_type = concern.concern_type
+            if concern_type == ANALYZE:
+                form.fields["node_type"].choices = (
+                    self.model.NODE_TYPES[0],
+                    self.model.NODE_TYPES[1],
+                )
+            elif concern_type == SET_TARGET:
+                form.fields["node_type"].choices = (
+                    self.model.NODE_TYPES[2],
+                    self.model.NODE_TYPES[3],
+                )
+
+        return form
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
